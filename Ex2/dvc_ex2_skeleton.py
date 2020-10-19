@@ -33,7 +33,7 @@ raw = raw.drop(columns=['CH'])
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.fillna.html
 # df.fillna(method='ffill')
 raw = raw.fillna(method = 'ffill')
-print(raw.head(3))
+#print(raw.head(3))
 
 
 ## T1.2 Calculate and smooth daily case changes
@@ -42,14 +42,14 @@ print(raw.head(3))
 # Fill null with zeros as well
 # 
 dnc = raw.diff(axis=0, periods=1).fillna(0)
-print(dnc.head(10))
+#print(dnc.head(3))
 
 # Smooth daily new case by the average value in a rolling window, and the window size is defined by step
 # Why do we need smoothing? How does the window size affect the result?
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rolling.html
 step = 3
 dnc_avg = dnc.rolling(step).sum().fillna(0)/step
-print(dnc_avg.head(10))
+#(dnc_avg.head(8))
 
 
 ## T1.3 Build a ColumnDataSource 
@@ -74,8 +74,6 @@ for canton in cantons:
 	source_dict[canton] = dnc_avg[canton]
 #print(source_dict)
 source = ColumnDataSource(data=source_dict)
-"""
-
 
 ### Task 2: Data Visualization
 
@@ -87,30 +85,36 @@ p = figure(plot_width=1000, plot_height=800, x_axis_type="datetime")
 p.title.text = 'Daily New Cases in Switzerland'
 
 lines = []
-for canton,color in zip(cantons,color_palette): 
-	lines.append(...)
+for canton, color in zip(cantons, color_palette):
+	p.line(date, dnc_avg[canton], line_width=2,
+	       color=color, alpha=1, legend_label=canton, name=canton)
+	
+
 
 # Make the legend of the plot clickable, and set the click_policy to be "hide"
-...
+p.legend.location = "top_center"
+p.legend.click_policy = "hide"
 
-
-
-## T2.2 Add hovering tooltips to display date, canton and averaged daily new case
+# T2.2 Add hovering tooltips to display date, canton and averaged daily new case
 
 # (Hovertip doc) https://docs.bokeh.org/en/latest/docs/user_guide/tools.html#hovertool
 # (Date hover)https://stackoverflow.com/questions/41380824/python-bokeh-hover-date-time
-hover = ...
-
-
+hover = HoverTool(
+	     tooltips=[
+			('date', '@x{%F}'), 
+			("canton", "$name"),
+			("cases", "@y")
+		],
+		formatters={'@x': 'datetime'}
+)
 p.add_tools(hover)
 
 show(p)
+
 output_file("dvc_ex2.html")
 save(p)
 
 
-
-"""
 
 
 
