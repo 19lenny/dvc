@@ -1,4 +1,4 @@
-ximport pandas as pd 
+import pandas as pd 
 from math import pi
 import numpy as np
 from bokeh.io import output_file, show, save
@@ -19,14 +19,17 @@ import bokeh.palettes as bp
 ## T1.1 Read data into a dataframe, set column "Date" to be the index 
 
 url = 'https://github.com/daenuprobst/covid19-cases-switzerland/blob/master/covid19_cases_switzerland_openzh-phase2.csv'
-
-raw = pd.read_csv(..)
-
+raw_content_url = 'https://raw.githubusercontent.com/daenuprobst/covid19-cases-switzerland/master/covid19_cases_switzerland_openzh-phase2.csv'
+raw = pd.read_csv(raw_content_url)
+raw.set_index('Date')
+#print(raw.head(3))
 
 # Initialize the first row with zeros, and remove the last column 'CH' from dataframe
-raw = ...
-
-
+raw.iloc[0, :]= 0
+raw = raw.drop(columns='CH')
+# raw = raw.iloc[0, :]= 0
+print(raw.head(3))
+"""
 # Fill null with the value of previous date from same canton
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.fillna.html
 raw...
@@ -97,7 +100,7 @@ save(p)
 
 
 
-
+"""
 
 
 
