@@ -42,31 +42,39 @@ print(raw.head(3))
 # Fill null with zeros as well
 # 
 dnc = raw.diff(axis=0, periods=1).fillna(0)
-print(dnc.head(3))
-"""
+print(dnc.head(10))
+
 # Smooth daily new case by the average value in a rolling window, and the window size is defined by step
 # Why do we need smoothing? How does the window size affect the result?
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rolling.html
 step = 3
-dnc_avg = ...
+dnc_avg = dnc.rolling(step).sum().fillna(0)/step
+print(dnc_avg.head(10))
 
 
 ## T1.3 Build a ColumnDataSource 
 
 # Extract all canton names and dates
 # NOTE: be careful with the format of date when it is used as x input for a plot
-cantons = ...
-date = ...
+cantons = raw.columns.tolist()
+#print(cantons)
+date = raw.index.tolist()
+date = pd.to_datetime(date)
+#print(date)
+
 
 # Create a color list to represent different cantons in the plot, you can either construct your own color patette or use the Bokeh color pallete
-color_palette = ...
-
+color_palette = bp.inferno(len(raw.columns))
+#print(color_palette)
 # Build a dictionary with date and each canton name as a key, i.e., {'date':[], 'AG':[], ..., 'ZH':[]}
 # For each canton, the value is a list containing the averaged daily new cases
-source_dict = ...
-
+source_dict = {}
+source_dict["date"] = date
+for canton in cantons:
+	source_dict[canton] = dnc_avg[canton]
+#print(source_dict)
 source = ColumnDataSource(data=source_dict)
-
+"""
 
 
 ### Task 2: Data Visualization
