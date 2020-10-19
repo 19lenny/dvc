@@ -21,27 +21,29 @@ import bokeh.palettes as bp
 url = 'https://github.com/daenuprobst/covid19-cases-switzerland/blob/master/covid19_cases_switzerland_openzh-phase2.csv'
 raw_content_url = 'https://raw.githubusercontent.com/daenuprobst/covid19-cases-switzerland/master/covid19_cases_switzerland_openzh-phase2.csv'
 raw = pd.read_csv(raw_content_url)
-raw.set_index('Date')
+raw =raw.set_index('Date')
 #print(raw.head(3))
 
 # Initialize the first row with zeros, and remove the last column 'CH' from dataframe
 raw.iloc[0, :]= 0
-raw = raw.drop(columns='CH')
-# raw = raw.iloc[0, :]= 0
-print(raw.head(3))
-"""
+raw = raw.drop(columns=['CH'])
+#print(raw.head(3))
+
 # Fill null with the value of previous date from same canton
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.fillna.html
-raw...
+# df.fillna(method='ffill')
+raw = raw.fillna(method = 'ffill')
+print(raw.head(3))
 
 
 ## T1.2 Calculate and smooth daily case changes
 
 # Compute daily new cases (dnc) for each canton, e.g. new case on Tuesday = case on Tuesday - case on Monday;
 # Fill null with zeros as well
-dnc = ...
-
-
+# 
+dnc = raw.diff(axis=0, periods=1).fillna(0)
+print(dnc.head(3))
+"""
 # Smooth daily new case by the average value in a rolling window, and the window size is defined by step
 # Why do we need smoothing? How does the window size affect the result?
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rolling.html
