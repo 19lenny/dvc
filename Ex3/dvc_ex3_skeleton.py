@@ -3,9 +3,10 @@ import numpy as np
 import bokeh.palettes as bp
 from bokeh.plotting import figure
 from bokeh.io import output_file, show, save
-from bokeh.models import ColumnDataSource, HoverTool, ColorBar, RangeTool
+from bokeh.models import ColumnDataSource, HoverTool, ColorBar, RangeTool, LogColorMapper, LogTicker
 from bokeh.transform import linear_cmap
 from bokeh.layouts import gridplot
+
 
 
 # ==========================================================================
@@ -68,13 +69,13 @@ mapper = linear_cmap(source.data['pos_rate'], bp.inferno(len(pos_rate.unique()))
 
 TOOLS = "box_select,lasso_select,wheel_zoom,pan,reset,help"
 p = figure(tools=TOOLS,  
-           x_range=(date[0], date[60]))
+           x_range=(date[0], date[30]))
     
 
 
 p.scatter(x="x",y="test_num",
           source=source,
-          color=linear_cmap('pos_rate', bp.Inferno256, pos_rate.min(), pos_rate.max()),
+          color=linear_cmap('pos_rate', bp.inferno(len(pos_rate.unique())), pos_rate.min(), pos_rate.max()),
           fill_alpha=0.5, size=10
           )
 
@@ -95,15 +96,14 @@ hover = hover = HoverTool(
 )
 p.add_tools(hover)
 
-show(p)
-"""
+
+
 ## T2.2 Add a colorbar to the above scatter plot, and encode positve rate values with colors; please use the color mapper defined in T1.3 
 
-color_bar = ColorBar(...)
+color_bar = ColorBar(color_mapper=mapper['transform'], width=20, location=(0,0), title="P_rate")
+p.add_layout(color_bar, 'right')
 
-
-
-
+"""
 ## T2.3 Covid-19 Positive Number Plot using RangeTool
 # In this range plot, x axis is the time, and y axis is the positive test number.
 
