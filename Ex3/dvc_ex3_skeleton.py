@@ -87,7 +87,7 @@ p.sizing_mode = "stretch_both"
 
 
 # Add a hovertool to display date, total test number
-hover = hover = HoverTool(
+hover = HoverTool(
 	     tooltips=[
 			('date', '@x{%F}'), 
 			("total tests", '@test_num')
@@ -103,28 +103,39 @@ p.add_tools(hover)
 color_bar = ColorBar(color_mapper=mapper['transform'], width=20, location=(0,0), title="P_rate")
 p.add_layout(color_bar, 'right')
 
-"""
+
 ## T2.3 Covid-19 Positive Number Plot using RangeTool
 # In this range plot, x axis is the time, and y axis is the positive test number.
 
-select = figure(...)
+select = figure(title="Drag the middle and edges of the selection box to change the range above",
+                plot_height=130, plot_width=800, y_range=p.y_range,
+                x_axis_type="datetime", y_axis_type=None,
+                tools="", toolbar_location=None, background_fill_color="#efefef")
+show(p)
+
 
 # Define a RangeTool to link with x_range in the scatter plot
-range_tool = RangeTool(...)
+range_tool = RangeTool(x_range=p.x_range)
+range_tool.overlay.fill_color = "powderblue"
+range_tool.overlay.fill_alpha = 0.2
 
 
 # Draw a line plot and add the RangeTool to the plot
-select ...
+select.line(x='date', y='pos_rate', source=source)
 select.yaxis.axis_label = "Positive Cases"
 select.xaxis.axis_label = "Date"
-
-
+select.add_tools(range_tool)
+select.toolbar.active_multi = range_tool
 
 # Add a hovertool to the range plot and display date, positive test number
-hover2 = HoverTool(...)
+hover2 = HoverTool(tooltips=[
+			('date', '@x{%F}'), 
+			("pos_tests", '@pos_num')
+		],
+        formatters={'@x': 'datetime'})
 select.add_tools(hover2)
 
-
+"""
 ## T2.4 Layout arrangement and display
 
 linked_p = ...
