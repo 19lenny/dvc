@@ -3,9 +3,9 @@ import numpy as np
 import bokeh.palettes as bp
 from bokeh.plotting import figure
 from bokeh.io import output_file, show, save
-from bokeh.models import ColumnDataSource, HoverTool, ColorBar, RangeTool, LogColorMapper, LogTicker
+from bokeh.models import ColumnDataSource, HoverTool, ColorBar, RangeTool
 from bokeh.transform import linear_cmap
-from bokeh.layouts import gridplot
+from bokeh.layouts import gridplot, column
 
 
 
@@ -56,8 +56,6 @@ pos_rate = pos_rate
 
 mapper = linear_cmap(source.data['pos_rate'], bp.inferno(len(pos_rate.unique())), pos_rate.min(), pos_rate.max())
 
-
-
 ### Task2: Data Visualization
 # Reference link:
 # (range tool example) https://docs.bokeh.org/en/latest/docs/gallery/range_tool.html?highlight=rangetool
@@ -71,20 +69,16 @@ TOOLS = "box_select,lasso_select,wheel_zoom,pan,reset,help"
 p = figure(tools=TOOLS,  
            x_range=(date[0], date[30]))
     
-
-
 p.scatter(x="x",y="test_num",
           source=source,
           color=linear_cmap('pos_rate', bp.inferno(len(pos_rate.unique())), pos_rate.min(), pos_rate.max()),
           fill_alpha=0.5, size=10
           )
 
-
 p.title.text = 'Covid-19 Tests in Switzerland'
 p.yaxis.axis_label = "Total Tests"
 p.xaxis.axis_label = "Date"
 p.sizing_mode = "stretch_both"
-
 
 # Add a hovertool to display date, total test number
 hover = HoverTool(
@@ -97,7 +91,6 @@ hover = HoverTool(
 p.add_tools(hover)
 
 
-
 ## T2.2 Add a colorbar to the above scatter plot, and encode positve rate values with colors; please use the color mapper defined in T1.3 
 
 color_bar = ColorBar(color_mapper=mapper['transform'], width=20, location=(0,0), title="P_rate")
@@ -108,10 +101,8 @@ p.add_layout(color_bar, 'right')
 # In this range plot, x axis is the time, and y axis is the positive test number.
 
 select = figure(title="Drag the middle and edges of the selection box to change the range above",
-                plot_height=130, plot_width=800, y_range=p.y_range,
-                x_axis_type="datetime", y_axis_type=None,
-                tools="", toolbar_location=None, background_fill_color="#efefef")
-show(p)
+                plot_height=300, plot_width=1200,
+                x_axis_type="datetime")
 
 
 # Define a RangeTool to link with x_range in the scatter plot
@@ -121,7 +112,7 @@ range_tool.overlay.fill_alpha = 0.2
 
 
 # Draw a line plot and add the RangeTool to the plot
-select.line(x='date', y='pos_rate', source=source)
+select.line(x="x", y="pos_num", source=source)
 select.yaxis.axis_label = "Positive Cases"
 select.xaxis.axis_label = "Date"
 select.add_tools(range_tool)
@@ -130,16 +121,15 @@ select.toolbar.active_multi = range_tool
 # Add a hovertool to the range plot and display date, positive test number
 hover2 = HoverTool(tooltips=[
 			('date', '@x{%F}'), 
-			("pos_tests", '@pos_num')
+			('pos_num', '@pos_num')
 		],
         formatters={'@x': 'datetime'})
 select.add_tools(hover2)
 
-"""
 ## T2.4 Layout arrangement and display
 
-linked_p = ...
+linked_p = column(p, select)
 show(linked_p)
 output_file("dvc_ex3.html")
 save(linked_p)
-"""
+
