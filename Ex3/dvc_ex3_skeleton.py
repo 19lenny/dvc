@@ -27,20 +27,21 @@ from bokeh.layouts import gridplot
 # You can read the latest data from the url, or use the data provided in the folder (update Nov.3, 2020)
 
 url = 'https://github.com/daenuprobst/covid19-cases-switzerland/blob/master/covid19_tests_switzerland_bag.csv'
-raw = pd.read_csv('covid19_tests_switzerland_bag.csv', index_col=[0])
+raw = pd.read_csv('covid19_tests_switzerland_bag.csv', index_col=[0], parse_dates=['date'])
 
-print(raw.head(3))
+#print(raw.head(3))
 
 ## T1.2 Create a ColumnDataSource containing: date, positive number, positive rate, total tests
 # All the data can be extracted from the raw dataframe.
 
-date = raw.iloc[:, 0]
-#print(date.head(3))
-pos_num = raw.iloc[:, 2]
-print(pos_num.head(3))
-pos_rate = raw.iloc[:, 4]
-test_num = raw.iloc[:, 3]
-#date = raw.date
+date = raw.date
+#(date.head(3))
+pos_num = raw.n_positive
+#print(pos_num.head(3))
+pos_rate = raw.frac_positive
+#print(pos_rate.head(50))
+test_num = raw.n_tests
+
 
 source = ColumnDataSource(dict(
 x = date,
@@ -49,11 +50,10 @@ test_num = test_num,
 pos_rate = pos_rate
 ))
 
-
 ## T1.3 Map the range of positive rate to a colormap using module "linear_cmap"
 # "low" should be the minimum value of positive rates, and "high" should be the maximum value
 
-mapper = linear_cmap('P_Rate', bp.inferno(len(pos_rate.unique())), pos_rate.min(), pos_rate.max())
+mapper = linear_cmap(source.data['pos_rate'], bp.inferno(len(pos_rate.unique())), pos_rate.min(), pos_rate.max())
 
 
 
@@ -67,13 +67,16 @@ mapper = linear_cmap('P_Rate', bp.inferno(len(pos_rate.unique())), pos_rate.min(
 # Set the initial x_range to be the first 30 days.
 
 TOOLS = "box_select,lasso_select,wheel_zoom,pan,reset,help"
-p = figure(plot_height=300, plot_width=1200, tools=TOOLS, x_axis_type="datetime", 
-           x_range=(date[0], date[30]))
+p = figure(tools=TOOLS,  
+           x_range=(date[0], date[60]))
     
-       
 
-p.scatter(x='date' ,y='n_tests', 
-source =source, color= linear_cmap('pos_rate', bp.inferno(len(pos_rate.unique())), pos_rate.min(), pos_rate.max(), size = 15,alpha=0.5) 
+
+p.scatter(x="x",y="test_num",
+          source=source,
+          color=linear_cmap('pos_rate', bp.Inferno256, pos_rate.min(), pos_rate.max()),
+          fill_alpha=0.5, size=10
+          )
 
 
 p.title.text = 'Covid-19 Tests in Switzerland'
@@ -81,11 +84,19 @@ p.yaxis.axis_label = "Total Tests"
 p.xaxis.axis_label = "Date"
 p.sizing_mode = "stretch_both"
 
+
 # Add a hovertool to display date, total test number
-hover = HoverTool(...)
+hover = hover = HoverTool(
+	     tooltips=[
+			('date', '@x{%F}'), 
+			("total tests", '@test_num')
+		],
+        formatters={'@x': 'datetime'}
+)
 p.add_tools(hover)
 
-
+show(p)
+"""
 ## T2.2 Add a colorbar to the above scatter plot, and encode positve rate values with colors; please use the color mapper defined in T1.3 
 
 color_bar = ColorBar(...)
@@ -120,4 +131,4 @@ linked_p = ...
 show(linked_p)
 output_file("dvc_ex3.html")
 save(linked_p)
-
+"""
