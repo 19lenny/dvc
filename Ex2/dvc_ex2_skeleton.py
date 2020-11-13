@@ -25,9 +25,10 @@ raw =raw.set_index('Date')
 #print(raw.head(3))
 
 # Initialize the first row with zeros, and remove the last column 'CH' from dataframe
+print(raw.head(3))
 raw.iloc[0, :]= 0
 raw = raw.drop(columns=['CH'])
-#print(raw.head(3))
+print(raw.head(3))
 
 # Fill null with the value of previous date from same canton
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.fillna.html
@@ -64,7 +65,7 @@ date = pd.to_datetime(date)
 
 
 # Create a color list to represent different cantons in the plot, you can either construct your own color patette or use the Bokeh color pallete
-color_palette = bp.inferno(len(raw.columns))
+color_palette = bp.inferno(26)
 #print(color_palette)
 # Build a dictionary with date and each canton name as a key, i.e., {'date':[], 'AG':[], ..., 'ZH':[]}
 # For each canton, the value is a list containing the averaged daily new cases
