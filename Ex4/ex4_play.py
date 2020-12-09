@@ -135,7 +135,7 @@ p1.xgrid.grid_line_color = None
 p1.ygrid.grid_line_color = None
 
 # Plot the map using patches, set the fill_color as mappers['Density']
-cantons = p1.patches(xs="xs", ys="ys", fill_color=mappers['Density'], source=geosource, line_width=0.33, fill_alpha=0.33)
+cantons = p1.patches(xs="xs", ys="ys", fill_color=mappers['Density'], source=geosource, line_width=0.33, fill_alpha=0.6)
 
 # Create a colorbar with mapper['Density'] and add it to above figure
 color_bar = ColorBar(color_mapper=mappers['Density']['transform'], width=16, location=(0, 0), title="Density")
