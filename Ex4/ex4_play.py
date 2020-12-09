@@ -62,7 +62,6 @@ demo_raw = pd.read_csv(demo_url_raw)
 local_raw = pd.read_csv(local_url_raw)
 # Extract unique 'abbreviation_canton','lat','long' combinations from local_raw
 
-## scheint nicht richtig zu sein
 
 canton_point = local_raw.groupby(['abbreviation_canton', 'lat', 'long']).size().reset_index().rename(
     columns={0: 'count'})
@@ -127,8 +126,8 @@ mappers['BedsPerCapita'] = linear_cmap(field_name='BedsPerCapita', palette=palet
 
 # Define a figure
 p1 = figure(title='Demographics in Switzerland',
-            plot_height=600,
-            plot_width=950,
+            plot_height=500,
+            plot_width=900,
             toolbar_location='above',
             tools="pan, wheel_zoom, box_zoom, reset")
 
@@ -136,7 +135,7 @@ p1.xgrid.grid_line_color = None
 p1.ygrid.grid_line_color = None
 
 # Plot the map using patches, set the fill_color as mappers['Density']
-cantons = p1.patches(xs="xs", ys="ys", fill_color=mappers['Density'], source=geosource, line_width=0.25, fill_alpha=0.5)
+cantons = p1.patches(xs="xs", ys="ys", fill_color=mappers['Density'], source=geosource, line_width=0.33, fill_alpha=0.33)
 
 # Create a colorbar with mapper['Density'] and add it to above figure
 color_bar = ColorBar(color_mapper=mappers['Density']['transform'], width=16, location=(0, 0), title="Density")
@@ -150,7 +149,7 @@ hover = HoverTool(
 p1.add_tools(hover)
 
 # T2.3 Add circles at the locations of capital cities for each canton, and the sizes are proportional to daily new cases per capita
-sites = p1.circle('long', 'lat', source=geosource, color='blue', size='size', alpha=0.5)
+sites = p1.circle('long', 'lat', source=geosource, color='violet', size='size', alpha=0.33)
 
 # T2.4 Create a radio button group with labels 'Density', and 'BedsPerCapita'
 buttons = RadioButtonGroup(labels=['Density', 'BedPerCapita'], active=0)
